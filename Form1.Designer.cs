@@ -30,6 +30,9 @@
         {
             pnlDisplay = new Panel();
             lblDisplay = new Label();
+            pnlPower = new Panel();
+            radioOn = new RadioButton();
+            radioOff = new RadioButton();
             tlpButtonsPanel = new TableLayoutPanel();
             btnCE = new Button();
             btnBackspace = new Button();
@@ -51,6 +54,7 @@
             btnDecimal = new Button();
             btnEquals = new Button();
             pnlDisplay.SuspendLayout();
+            pnlPower.SuspendLayout();
             tlpButtonsPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -77,6 +81,46 @@
             lblDisplay.TabIndex = 0;
             lblDisplay.Text = "0";
             lblDisplay.TextAlign = ContentAlignment.MiddleRight;
+            lblDisplay.TextChanged += LblDisplay_TextChanged;
+            // 
+            // pnlPower
+            // 
+            pnlPower.Controls.Add(radioOn);
+            pnlPower.Controls.Add(radioOff);
+            pnlPower.Dock = DockStyle.Top;
+            pnlPower.Location = new Point(0, 80);
+            pnlPower.Name = "pnlPower";
+            pnlPower.Padding = new Padding(5);
+            pnlPower.Size = new Size(360, 42);
+            pnlPower.TabIndex = 1;
+            // 
+            // radioOn
+            // 
+            radioOn.AutoSize = true;
+            radioOn.Checked = true;
+            radioOn.Font = new Font("Segoe UI", 11F);
+            radioOn.ForeColor = Color.DarkGreen;
+            radioOn.Location = new Point(12, 9);
+            radioOn.Name = "radioOn";
+            radioOn.Size = new Size(50, 24);
+            radioOn.TabIndex = 0;
+            radioOn.TabStop = true;
+            radioOn.Text = "ON";
+            radioOn.UseVisualStyleBackColor = true;
+            radioOn.CheckedChanged += RadioPower_CheckedChanged;
+            // 
+            // radioOff
+            // 
+            radioOff.AutoSize = true;
+            radioOff.Font = new Font("Segoe UI", 11F);
+            radioOff.ForeColor = Color.DarkRed;
+            radioOff.Location = new Point(78, 9);
+            radioOff.Name = "radioOff";
+            radioOff.Size = new Size(53, 24);
+            radioOff.TabIndex = 1;
+            radioOff.Text = "OFF";
+            radioOff.UseVisualStyleBackColor = true;
+            radioOff.CheckedChanged += RadioPower_CheckedChanged;
             // 
             // tlpButtonsPanel
             // 
@@ -105,7 +149,7 @@
             tlpButtonsPanel.Controls.Add(btnDecimal, 1, 4);
             tlpButtonsPanel.Controls.Add(btnEquals, 2, 4);
             tlpButtonsPanel.Dock = DockStyle.Fill;
-            tlpButtonsPanel.Location = new Point(0, 80);
+            tlpButtonsPanel.Location = new Point(0, 122);
             tlpButtonsPanel.Name = "tlpButtonsPanel";
             tlpButtonsPanel.RowCount = 5;
             tlpButtonsPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
@@ -114,7 +158,7 @@
             tlpButtonsPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
             tlpButtonsPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
             tlpButtonsPanel.Size = new Size(360, 320);
-            tlpButtonsPanel.TabIndex = 1;
+            tlpButtonsPanel.TabIndex = 2;
             // 
             // btnCE
             // 
@@ -369,8 +413,9 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(360, 400);
+            ClientSize = new Size(360, 442);
             Controls.Add(tlpButtonsPanel);
+            Controls.Add(pnlPower);
             Controls.Add(pnlDisplay);
             MaximizeBox = false;
             MinimizeBox = false;
@@ -378,6 +423,8 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Калькулятор";
             pnlDisplay.ResumeLayout(false);
+            pnlPower.ResumeLayout(false);
+            pnlPower.PerformLayout();
             tlpButtonsPanel.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -386,6 +433,9 @@
 
         private Panel pnlDisplay;
         private Label lblDisplay;
+        private Panel pnlPower;
+        private RadioButton radioOn;
+        private RadioButton radioOff;
         private TableLayoutPanel tlpButtonsPanel;
         private Button btnCE;
         private Button btnBackspace;

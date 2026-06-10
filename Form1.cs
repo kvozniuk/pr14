@@ -4,6 +4,7 @@ namespace пр14
     {
         private double firstNumber;
         private string operation = string.Empty;
+        private bool isCalculatorOn = true;
         private bool isOperationSelected;
         private bool isResultShown;
 
@@ -12,6 +13,7 @@ namespace пр14
             InitializeComponent();
             KeyPreview = true;
             KeyDown += Form1_KeyDown;
+            ApplyCalculatorPowerState();
         }
 
         private void NumberButton_Click(object sender, EventArgs e)
@@ -24,6 +26,11 @@ namespace пр14
 
         private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
+            if (!isCalculatorOn)
+            {
+                return;
+            }
+
             string? digit = GetDigitFromKey(e.KeyCode);
 
             if (digit is null)
@@ -37,6 +44,11 @@ namespace пр14
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (!isCalculatorOn)
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
+
             switch (keyData & Keys.KeyCode)
             {
                 case Keys.Left:
@@ -58,6 +70,11 @@ namespace пр14
 
         private void AddDisplayCharacter(string buttonText)
         {
+            if (!isCalculatorOn)
+            {
+                return;
+            }
+
             if (isOperationSelected || isResultShown || !IsDisplayNumber())
             {
                 lblDisplay.Text = "0";
@@ -172,6 +189,27 @@ namespace пр14
             lblDisplay.Text = FormatNumber(number / 100);
         }
 
+        private void RadioPower_CheckedChanged(object sender, EventArgs e)
+        {
+            ApplyCalculatorPowerState();
+        }
+
+        private void LblDisplay_TextChanged(object sender, EventArgs e)
+        {
+            string displayText = lblDisplay.Text;
+
+            if (string.IsNullOrEmpty(displayText) || IsDisplayNumber())
+            {
+                lblDisplay.ForeColor = CountDigits(displayText) >= 7
+                    ? Color.DarkGreen
+                    : Color.Black;
+            }
+            else
+            {
+                lblDisplay.ForeColor = Color.DarkRed;
+            }
+        }
+
         private void SelectOperation(string selectedOperation)
         {
             if (!TryGetDisplayNumber(out firstNumber))
@@ -217,6 +255,41 @@ namespace пр14
             btnCE.Focus();
         }
 
+        private void ApplyCalculatorPowerState()
+        {
+            isCalculatorOn = radioOn.Checked;
+            SetCalculatorButtonsEnabled(isCalculatorOn);
+            KeyPreview = isCalculatorOn;
+
+            if (isCalculatorOn)
+            {
+                if (string.IsNullOrEmpty(lblDisplay.Text))
+                {
+                    lblDisplay.Text = "0";
+                }
+
+                return;
+            }
+
+            firstNumber = 0;
+            operation = string.Empty;
+            isOperationSelected = false;
+            isResultShown = false;
+            lblDisplay.Text = string.Empty;
+            radioOff.Focus();
+        }
+
+        private void SetCalculatorButtonsEnabled(bool isEnabled)
+        {
+            foreach (Control control in tlpButtonsPanel.Controls)
+            {
+                if (control is Button button)
+                {
+                    button.Enabled = isEnabled;
+                }
+            }
+        }
+
         private static void MarkKeyAsHandled(KeyEventArgs e)
         {
             e.Handled = true;
@@ -236,6 +309,21 @@ namespace пр14
             }
 
             return null;
+        }
+
+        private static int CountDigits(string text)
+        {
+            int count = 0;
+
+            foreach (char symbol in text)
+            {
+                if (char.IsDigit(symbol))
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private bool TryGetDisplayNumber(out double number)
