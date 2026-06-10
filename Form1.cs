@@ -162,7 +162,12 @@ namespace пр14
 
         private void BtnCE_Click(object sender, EventArgs e)
         {
-            ResetCalculator();
+            using ConfirmClearForm confirm = new();
+
+            if (confirm.ShowDialog(this) == DialogResult.Yes)
+            {
+                ResetCalculator();
+            }
         }
 
         private void BtnBackspace_Click(object sender, EventArgs e)
