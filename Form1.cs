@@ -10,17 +10,54 @@ namespace пр14
         public Form1()
         {
             InitializeComponent();
+            KeyPreview = true;
+            KeyDown += Form1_KeyDown;
         }
 
         private void NumberButton_Click(object sender, EventArgs e)
         {
-            if (sender is not Button button)
+            if (sender is Button button)
+            {
+                AddDisplayCharacter(button.Text);
+            }
+        }
+
+        private void Form1_KeyDown(object? sender, KeyEventArgs e)
+        {
+            string? digit = GetDigitFromKey(e.KeyCode);
+
+            if (digit is null)
             {
                 return;
             }
 
-            string buttonText = button.Text;
+            AddDisplayCharacter(digit);
+            MarkKeyAsHandled(e);
+        }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData & Keys.KeyCode)
+            {
+                case Keys.Left:
+                    MoveButtonFocus(0, -1);
+                    return true;
+                case Keys.Right:
+                    MoveButtonFocus(0, 1);
+                    return true;
+                case Keys.Up:
+                    MoveButtonFocus(-1, 0);
+                    return true;
+                case Keys.Down:
+                    MoveButtonFocus(1, 0);
+                    return true;
+                default:
+                    return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
+        private void AddDisplayCharacter(string buttonText)
+        {
             if (isOperationSelected || isResultShown || !IsDisplayNumber())
             {
                 lblDisplay.Text = "0";
@@ -146,6 +183,59 @@ namespace пр14
             operation = selectedOperation;
             isOperationSelected = true;
             isResultShown = false;
+        }
+
+        private void MoveButtonFocus(int rowDelta, int columnDelta)
+        {
+            Button[,] buttonGrid =
+            {
+                { btnCE, btnBackspace, btnPercent, btnDivide },
+                { btn7, btn8, btn9, btnMultiply },
+                { btn4, btn5, btn6, btnMinus },
+                { btn1, btn2, btn3, btnPlus },
+                { btn0, btnDecimal, btnEquals, btnEquals }
+            };
+
+            Button? activeButton = ActiveControl as Button;
+
+            for (int row = 0; row < buttonGrid.GetLength(0); row++)
+            {
+                for (int column = 0; column < buttonGrid.GetLength(1); column++)
+                {
+                    if (buttonGrid[row, column] != activeButton)
+                    {
+                        continue;
+                    }
+
+                    int nextRow = Math.Clamp(row + rowDelta, 0, buttonGrid.GetLength(0) - 1);
+                    int nextColumn = Math.Clamp(column + columnDelta, 0, buttonGrid.GetLength(1) - 1);
+                    buttonGrid[nextRow, nextColumn].Focus();
+                    return;
+                }
+            }
+
+            btnCE.Focus();
+        }
+
+        private static void MarkKeyAsHandled(KeyEventArgs e)
+        {
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+        }
+
+        private static string? GetDigitFromKey(Keys keyCode)
+        {
+            if (keyCode >= Keys.D0 && keyCode <= Keys.D9)
+            {
+                return ((int)keyCode - (int)Keys.D0).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+
+            if (keyCode >= Keys.NumPad0 && keyCode <= Keys.NumPad9)
+            {
+                return ((int)keyCode - (int)Keys.NumPad0).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+
+            return null;
         }
 
         private bool TryGetDisplayNumber(out double number)
